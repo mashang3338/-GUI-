@@ -4,7 +4,6 @@ from bs4 import BeautifulSoup
 # 下面是TKINTER
 from requests import get, post
 from fake_useragent import UserAgent
-from lxml import etree
 from tkinter import *
 from tkinter import messagebox
 from time import time, sleep
@@ -95,11 +94,6 @@ class LoadingBar(object):
 loading = LoadingBar()
 # loading.show(speed=5)
 
-def start():
-
-    get_url_list()
-    loading.close()
-
 #
 # def close_loading():
 #     loading.close()
@@ -159,7 +153,7 @@ find_button = Button(root,
                      text="开始执行程序",
                      font=("宋体", 12),
                      # command=get_url_list)
-command=start)
+command=get_url_list)
 find_button.grid(row=2,column=2)
 #下一章按钮
 next_button = Button(root,
@@ -191,8 +185,3 @@ text.config(yscrollcommand=scroll.set)
 
 # main()
 mainloop()
-
-
-#test
-
-#测试
