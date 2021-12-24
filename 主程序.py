@@ -1,3 +1,6 @@
+#导入加载进度条类
+import loading
+
 import tkinter
 import requests
 from bs4 import BeautifulSoup
@@ -14,98 +17,23 @@ from threading import Thread
 from tkinter.messagebox import *
 import time
 from tkinter import ttk
-
+#导入翻译文件
+import fanyi
 root = Tk()
-root.geometry("800x600+500+150")
+root.geometry("1000x1000+500+150")
 root.resizable(0, 0)
 root.title("小说下载")
 url_list = []
 
 number = 0
 
-#下面是加载滚动条效果
-def formatForm(form, width, heigth):
-    """设置居中显示"""
-    # 得到屏幕宽度
-    win_width = form.winfo_screenwidth()
-    # 得到屏幕高度
-    win_higth = form.winfo_screenheight()
-    # 计算偏移量
-    width_adjust = (win_width - width) / 2
-    higth_adjust = (win_higth - heigth) / 2
-    form.geometry("%dx%d+%d+%d" % (width, heigth, width_adjust, higth_adjust))
 
-#加载组件类
-class LoadingBar(object):
-#窗体大小
-    def __init__(self, width=200):
-        # 存储显示窗体
-        self.__dialog = None
-        # 记录显示标识
-        self.__showFlag = True
-        # 设置滚动条的宽度
-        self.__width = width
-        # 设置窗体高度
-        self.__heigth = 20
+loading = loading.LoadingBar()
+# loading.show(speed=4)
 
-    def show(self, speed=10, sleep=0):
-        """显示的时候支持重置滚动条速度和标识判断等待时长"""
-        # 防止重复创建多个
-        if self.__dialog is not None:
-            return
-        # 线程内读取标记的等待时长（单位秒）
-        self.__sleep = sleep
-
-        # 创建窗体
-        self.__dialog = tkinter.Toplevel()
-        # 去除边框
-        self.__dialog.overrideredirect(-1)
-        # 设置置顶
-        self.__dialog.wm_attributes("-topmost", True)
-        formatForm(self.__dialog, self.__width, self.__heigth)
-        # 实际的滚动条控件
-        self.bar = ttk.Progressbar(self.__dialog, length=self.__width, mode="indeterminate",
-                                   orient=tkinter.HORIZONTAL)
-        self.bar.pack(expand=True)
-        # 数值越小，滚动越快
-        self.bar.start(speed)
-        # 开启新线程保持滚动条显示
-        t = threading.Thread(target=self.waitClose)
-        t.setDaemon(True)
-        t.start()
-
-    def waitClose(self):
-        # 控制在线程内等待回调销毁窗体
-        while self.__showFlag:
-            time.sleep(self.__sleep)
-
-        # 非空情况下销毁
-        if self.__dialog is not None:
-            self.__dialog.destroy()
-
-        # 重置必要参数
-        self.__dialog = None
-        self.__showFlag = True
-
-    def close(self):
-        # 设置显示标识为不显示
-        self.__showFlag = False
-
-#loading就是上面定义的类
-loading = LoadingBar()
-# loading.show(speed=5)
-
-def start():
-
-    get_url_list()
-    loading.close()
-
-#
-# def close_loading():
-#     loading.close()
 
 def get_url_list():
-    # #开启滚动条
+    #开启滚动条
     loading.show()
     #获取20章
     time = 20
@@ -158,8 +86,8 @@ def get_novel():
 find_button = Button(root,
                      text="开始执行程序",
                      font=("宋体", 12),
-                     # command=get_url_list)
-command=start)
+                     command=get_url_list)
+# command=start)
 find_button.grid(row=2,column=2)
 #下一章按钮
 next_button = Button(root,
@@ -167,6 +95,7 @@ next_button = Button(root,
                      font=("宋体", 12),
                      command=get_novel)
 next_button.grid(row=2,column=3)
+
 #label
 show_label = Label(root,
                   text="小说章节内容：",
@@ -182,17 +111,29 @@ scroll.grid(row=2,column=1)
 text = Text(root, font=("宋体", 12),yscrollcommand=scroll.set)
 text.grid(row=2,column=1)
 
+#
+#
+# # 两个控件关联
+# scroll.config(command=text.yview)
+# text.config(yscrollcommand=scroll.set)
+
+#调用翻译函数
+test = fanyi.Get_Fanyi()
+# test.get_content(aim_path=r"D:\base\第一章：醒来（下）.txt")
+#测试
+def callback():
+    print("这是测试！")
+#翻译按钮
+fanyi_button = Button(root,
+                     text="翻译",
+                     font=("宋体", 12),
+                     command=test.get_content(aim_path=r"D:\base\第一章：醒来（下）.txt"))
+fanyi_button.grid(row=2,column=4)
 
 
-# 两个控件关联
-scroll.config(command=text.yview)
-text.config(yscrollcommand=scroll.set)
+
 
 
 # main()
 mainloop()
 
-
-#test
-
-#测试
