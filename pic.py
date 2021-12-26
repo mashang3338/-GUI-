@@ -11,7 +11,7 @@ from threading import Thread
 
 
 class Window():
-    def __init__(self):
+    def __init__(self):#初始化操作——生成窗口、按钮等
         self.root = root = tkinter.Tk()
 
         self.label = tkinter.Label(root, text='选择目录')
@@ -26,37 +26,39 @@ class Window():
 
     def BrowserDir(self):
         directory = tkinter.filedialog.askdirectory(title='Python')
-        if directory:
+        if directory:#输出框内容
             self.entryDir.delete(0, tkinter.END)
             self.entryDir.insert(tkinter.END, directory)
 
     def Conv(self):
+        #获取输入框内容
         path = self.entryDir.get()
-
+        #进度条
         def _prog():
             top = tkinter.Toplevel(self.root)
-            top.attributes("-toolwindow", 1)
+            top.attributes("-fullscreen", 1)
             top.attributes("-topmost", 1)
             top.title("进度条")
             tkinter.Label(top, text="正在处理图片，请稍候…").pack()
             prog = Progressbar(top, mode="indeterminate")
-            prog.pack()
-            prog.start()
 
+            prog.pack()
+            prog.start()#进度条开始
+            #转换
             for file in os.listdir(path):
                 if file[-4:] in ('.bmp', '.jpg', 'jpeg', '.gif', '.png', '.BMP', '.JPG', 'JPGE', '.GIF', '.PNG'):
-                    f_img = path + "/" + file
+                    f_img = path + "/" + file#新图片保存路径
                     image = Image.open(f_img)
                     newwidth = int(image.size[0] / 2)
                     newheight = int(image.size[1] / 2)
-                    image = image.resize((newwidth, newheight), PIL.Image.NEAREST)
+                    image = image.resize((newwidth, newheight), PIL.Image.NEAREST)#图片改为一半大小
                     image.save(f_img)
                     sleep(0.5)
-            prog.stop()
+            prog.stop()#进度条结束
             top.destroy()
             tkinter.messagebox.showinfo("提示：", "已完成！")
 
-        t = Thread(target=_prog)
+        t = Thread(target=_prog)#线程
         t.start()
 
     def mainloop(self):
