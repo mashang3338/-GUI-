@@ -1,3 +1,4 @@
+本文件目标——创建PDF转图片的类——进一步的话可以对PDF进行进一步操作比如合并、提取文字等
 import os
 from PIL import Image, ImageEnhance
 import PIL
@@ -18,14 +19,14 @@ class Window():
         self.label.grid(row=3, column=0)
         self.entryDir = tkinter.Entry(root)
         self.entryDir.grid(row=3, column=1)
-        self.BrowserDirButton = tkinter.Button(root, text='浏览', command=self.BrowserDir)
+        self.BrowserDirButton = tkinter.Button(root, text='浏览', command=self.BrowserDir)#注意这里的回调函数browserdir,指打开文件管理器
         self.BrowserDirButton.grid(row=3, column=2)
 
-        self.ButtonCov = tkinter.Button(root, text='开始处理', command=self.Conv, )
+        self.ButtonCov = tkinter.Button(root, text='开始处理', command=self.Conv, )#这里的回调函数是主要的转换功能
         self.ButtonCov.grid(row=4, column=0)
 
     def BrowserDir(self):
-        directory = tkinter.filedialog.askdirectory(title='Python')
+        directory = tkinter.filedialog.askdirectory(title='Python')#值即选择目录路径
         if directory:#输出框内容
             self.entryDir.delete(0, tkinter.END)
             self.entryDir.insert(tkinter.END, directory)
@@ -33,14 +34,14 @@ class Window():
     def Conv(self):
         #获取输入框内容
         path = self.entryDir.get()
-        #进度条
+        #进度条，嵌套在上个函数里
         def _prog():
             top = tkinter.Toplevel(self.root)
             top.attributes("-fullscreen", 1)
             top.attributes("-topmost", 1)
             top.title("进度条")
             tkinter.Label(top, text="正在处理图片，请稍候…").pack()
-            prog = Progressbar(top, mode="indeterminate")
+            prog = Progressbar(top, mode="indeterminate")#直接实例化ttk的方法
 
             prog.pack()
             prog.start()#进度条开始
@@ -58,8 +59,8 @@ class Window():
             top.destroy()
             tkinter.messagebox.showinfo("提示：", "已完成！")
 
-        t = Thread(target=_prog)#线程
-        t.start()
+        t = Thread(target=_prog)#线程,实例化_prog方法
+        t.start()#执行——prog方法
 
     def mainloop(self):
         self.root.minsize(330, 190)
