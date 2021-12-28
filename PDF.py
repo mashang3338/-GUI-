@@ -5,10 +5,12 @@ from PyPDF2 import PdfFileReader, PdfFileWriter
 import tkinter
 import tkinter.filedialog
 import tkinter.messagebox
-
 from tkinter.ttk import Progressbar
 from time import sleep
 from threading import Thread
+import sys, fitz
+import os
+import datetime
 
 
 class Window():
@@ -31,7 +33,7 @@ class Window():
             self.entryDir.delete(0, tkinter.END)
             self.entryDir.insert(tkinter.END, directory)
 
-    def Conv(self):
+    def Split(self):
         #获取输入框内容
         path = self.entryDir.get()
         #进度条，嵌套在上个函数里
@@ -52,6 +54,50 @@ class Window():
                 pdf_writer = PdfFileWriter()
                 pdf_writer.addPage(pdf.getPage(page))
                 output = f'D:/base/temp/NO{page}.pdf'
+                with open(output, 'wb') as output_pdf:
+                    pdf_writer.write(output_pdf)
+            sleep(0.5)
+            prog.stop()#进度条结束
+            top.destroy()
+            tkinter.messagebox.showinfo("提示：", "已完成！")
+
+        t = Thread(target=_prog)#线程,实例化_prog方法
+        t.start()#执行——prog方法
+
+    def Conv(self):
+        #获取输入框内容
+        path = self.entryDir.get()
+        #进度条，嵌套在上个函数里
+        def _prog():
+            top = tkinter.Toplevel(self.root)
+            # top.attributes("-", 1)
+            top.attributes("-topmost", 1)
+            top.title("进度条")
+            tkinter.Label(top, text="正在处理PDF，请稍候…").pack()
+            prog = Progressbar(top, mode="indeterminate")#直接实例化ttk的方法
+            prog.pack()
+            prog.start()#进度条开始
+
+            #转换
+            pdfDoc = fitz.open(path)
+            for pg in range(pdfDoc.pageCount):
+                page = pdfDoc[pg]
+                rotate = int(0)
+                # 每个尺寸的缩放系数为1.3，这将为我们生成分辨率提高2.6的图像。
+                # 此处若是不做设置，默认图片大小为：792X612, dpi=72
+                zoom_x = 1.33333333  # (1.33333333-->1056x816)   (2-->1584x1224)
+                zoom_y = 1.33333333
+                mat = fitz.Matrix(zoom_x, zoom_y).preRotate(rotate)
+                pix = page.getPixmap(matrix=mat, alpha=False)
+
+                # if not os.path.exists(imagePath):
+                #     os.makedirs(imagePath)  # 可以以后新增用户选择文件存储目录按钮
+
+                pix.writePNG(path + '/' + 'images_%s.png' % pg)  # 将图片写入指定的文件夹内
+            for page in range(pdfDoc.getNumPages()):
+                pdf_writer = PdfFileWriter()
+                pdf_writer.addPage(pdfDoc.getPage(page))
+                output = f'D:/base/temp/picNO{page}.pdf'
                 with open(output, 'wb') as output_pdf:
                     pdf_writer.write(output_pdf)
             sleep(0.5)
