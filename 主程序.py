@@ -33,7 +33,7 @@ loading = loading.LoadingBar()
 
 
 def get_url_list():
-    #开启滚动条
+    #开启滚动条.......#这里的滚动条功能后面参照其他文件写出来
     loading.show()
     #获取20章
     time = 20
